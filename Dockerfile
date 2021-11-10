@@ -10,7 +10,16 @@ COPY . /code/
 
 
 # Prerequisites
-RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa wget openjdk-8-jdk
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+WORKDIR /app
+COPY requirements.txt ./
+RUN apt update -y && apt-get install -y software-properties-common && \
+    apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main' && apt update -y && \
+    apt-get install -y openjdk-8-jdk-headless && \
+    pip install --no-cache-dir -r requirements.txt && \
+    export JAVA_HOME && \
+    apt-get clean
+RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa wget
 
 # Set up new user
 RUN useradd -ms /bin/bash developer
